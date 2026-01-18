@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminRoute } from "@/components/AdminRoute";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "@/pages/Index";
 import Shop from "@/pages/Shop";
 import ProductDetail from "@/pages/ProductDetail";
@@ -34,6 +35,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter basename={import.meta.env.BASE_URL}>
+              <ScrollToTop />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/shop" element={<Shop />} />
