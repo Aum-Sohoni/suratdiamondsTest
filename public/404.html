@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <script>
+    // Single Page App redirect for GitHub Pages
+    // This script takes the current URL and converts the path and query
+    // string into just a query string, and redirects the browser to the
+    // new URL with only a query string and hash fragment.
+    const segmentCount = 1; // Number of path segments to keep (1 for /suratdiamondLV/)
+    
+    const fullPath = window.location.pathname;
+    const pathSegments = fullPath.split('/').filter(Boolean);
+    
+    // Keep the repo name segment, redirect the rest
+    const redirectPath = '/' + pathSegments.slice(0, segmentCount).join('/') + '/';
+    const remainingPath = pathSegments.slice(segmentCount).join('/');
+    
+    const queryString = window.location.search;
+    const hash = window.location.hash;
+    
+    // Redirect to index with the path stored in session storage
+    if (remainingPath) {
+      sessionStorage.setItem('spa-redirect-path', '/' + remainingPath + queryString + hash);
+    }
+    
+    window.location.replace(redirectPath + (hash || ''));
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>
