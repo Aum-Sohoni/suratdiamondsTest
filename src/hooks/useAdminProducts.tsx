@@ -16,8 +16,8 @@ export interface AdminProduct {
   carat: string | null;
   clarity: string | null;
   cut: string | null;
-  color: string | null;
   metal: string | null;
+  available_colors?: string[] | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -36,8 +36,8 @@ export interface ProductFormData {
   carat?: string;
   clarity?: string;
   cut?: string;
-  color?: string;
   metal?: string;
+  available_colors?: string[];
   is_active: boolean;
 }
 
@@ -109,8 +109,8 @@ export const useAdminProducts = () => {
 
       if (error) throw error;
 
-      setProducts(prev => 
-        prev.map(product => 
+      setProducts(prev =>
+        prev.map(product =>
           product.id === id ? (data as AdminProduct) : product
         )
       );

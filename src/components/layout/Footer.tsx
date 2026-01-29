@@ -36,16 +36,8 @@ export const Footer = () => {
               <img
                 src={logo}
                 alt="Surat Diamond Logo"
-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+                className="w-12 h-12 sm:w-14 sm:h-14 object-contain bg-white p-2 rounded-full border border-border/10"
               />
-              <div className="flex flex-col">
-                <span className="font-display text-base sm:text-xl tracking-wider text-foreground">
-                  Surat diamond
-                </span>
-                <span className="text-[8px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.3em] text-muted-foreground uppercase">
-                  Premium Jewellery
-                </span>
-              </div>
             </a>
             <p className="text-muted-foreground font-body leading-relaxed max-w-sm mb-4 sm:mb-6 text-xs sm:text-sm">
               {t("footerDescription")}

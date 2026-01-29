@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useProduct, useProducts, Product } from "@/hooks/useProducts";
+import { useAnalytics } from "@/contexts/AnalyticsContext";
+import { supabase } from "@/integrations/supabase/client";
 import {
   ShoppingBag,
   ZoomIn,
@@ -45,11 +47,14 @@ const ProductDetail = () => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const [showInquiryForm, setShowInquiryForm] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [inquiryForm, setInquiryForm] = useState({
     name: "",
     email: "",
     message: "",
   });
+
+  const { trackEvent } = useAnalytics();
 
   const { product, isLoading } = useProduct(id || "");
   // Fetch category products only when product category is available (or pass a distinct 'skip' value if supported, but here undefined fetches all. 
@@ -143,11 +148,30 @@ const ProductDetail = () => {
     toast.success(`${getProductName(product)} added to cart`);
   };
 
-  const handleInquirySubmit = (e: React.FormEvent) => {
+  const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Inquiry sent successfully! We'll contact you soon.");
-    setShowInquiryForm(false);
-    setInquiryForm({ name: "", email: "", message: "" });
+    try {
+      const { error } = await (supabase.from("inquiries" as any) as any).insert({
+        product_id: product.id,
+        name: inquiryForm.name,
+        email: inquiryForm.email,
+        message: inquiryForm.message,
+      });
+
+      if (error) throw error;
+
+      trackEvent("inquiry_submission", {
+        product_id: product.id,
+        product_name: product.name,
+      });
+
+      toast.success("Inquiry sent successfully! We'll contact you soon.");
+      setShowInquiryForm(false);
+      setInquiryForm({ name: "", email: "", message: "" });
+    } catch (err) {
+      console.error("Error submitting inquiry:", err);
+      toast.error("Failed to send inquiry. Please try again.");
+    }
   };
 
   // Safe to access product.id here
@@ -305,6 +329,29 @@ const ProductDetail = () => {
               <div className="font-display text-3xl text-foreground mb-8">
                 {formatPrice(product.price)}
               </div>
+
+              {/* Color Selection */}
+              {product.available_colors && product.available_colors.length > 0 && (
+                <div className="mb-8">
+                  <span className="text-sm font-medium text-foreground block mb-3 uppercase tracking-wider">
+                    Select Color
+                  </span>
+                  <div className="flex flex-wrap gap-3">
+                    {product.available_colors.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={`px-4 py-2 border rounded-sm transition-all duration-200 text-sm font-medium ${selectedColor === color
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-card text-foreground border-border hover:border-primary/50"
+                          }`}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Specifications */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">

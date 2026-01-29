@@ -120,16 +120,8 @@ export const Navigation = () => {
             <img
               src={logo}
               alt="Surat Diamond Logo"
-              className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-contain transition-transform duration-500 group-hover:scale-105"
+              className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-contain bg-white p-2 rounded-full transition-transform duration-500 group-hover:scale-105 border border-border/10"
             />
-            <div className="flex flex-col">
-              <span className="font-display text-base sm:text-lg lg:text-xl tracking-wider text-foreground">
-                Surat diamond
-              </span>
-              <span className="text-[8px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.3em] text-muted-foreground uppercase">
-                Premium Jewellery
-              </span>
-            </div>
           </Link>
 
           {/* Desktop Navigation */}

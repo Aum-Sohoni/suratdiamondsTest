@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const CATEGORIES = [
@@ -44,13 +44,12 @@ export const ProductForm = () => {
     price: 0,
     category: "rings",
     image_url: "",
-    carat: "",
-    clarity: "",
-    cut: "",
-    color: "",
     metal: "",
+    available_colors: [],
     is_active: true,
   });
+
+  const [colorInput, setColorInput] = useState("");
 
   useEffect(() => {
     if (isEditing && id) {
@@ -69,22 +68,21 @@ export const ProductForm = () => {
         }
 
         if (data) {
+          const productData = data as any;
           setFormData({
-            name: data.name,
-            name_lv: data.name_lv || "",
-            name_ru: data.name_ru || "",
-            description: data.description || "",
-            description_lv: data.description_lv || "",
-            description_ru: data.description_ru || "",
-            price: Number(data.price),
-            category: data.category,
-            image_url: data.image_url || "",
-            carat: data.carat || "",
-            clarity: data.clarity || "",
-            cut: data.cut || "",
-            color: data.color || "",
-            metal: data.metal || "",
-            is_active: data.is_active ?? true,
+            name: productData.name,
+            name_lv: productData.name_lv || "",
+            name_ru: productData.name_ru || "",
+            description: productData.description || "",
+            description_lv: productData.description_lv || "",
+            description_ru: productData.description_ru || "",
+            price: Number(productData.price),
+            category: productData.category,
+            image_url: productData.image_url || "",
+            cut: productData.cut || "",
+            metal: productData.metal || "",
+            available_colors: productData.available_colors || [],
+            is_active: productData.is_active ?? true,
           });
         }
         setIsFetching(false);
@@ -112,7 +110,7 @@ export const ProductForm = () => {
     }
   };
 
-  const handleChange = (field: keyof ProductFormData, value: string | number | boolean) => {
+  const handleChange = (field: keyof ProductFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -298,15 +296,6 @@ export const ProductForm = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="color">Color</Label>
-                  <Input
-                    id="color"
-                    value={formData.color}
-                    onChange={(e) => handleChange("color", e.target.value)}
-                    placeholder="e.g., D"
-                  />
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="metal">Metal</Label>
                   <Input
                     id="metal"
@@ -314,6 +303,63 @@ export const ProductForm = () => {
                     onChange={(e) => handleChange("metal", e.target.value)}
                     placeholder="e.g., 18K White Gold"
                   />
+                </div>
+              </div>
+
+              <div className="space-y-4 mt-6 pt-6 border-t border-border">
+                <Label>Available Colors</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={colorInput}
+                    onChange={(e) => setColorInput(e.target.value)}
+                    placeholder="Enter a color (e.g. Gold, Silver)"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (colorInput.trim()) {
+                          const newColors = [...(formData.available_colors || []), colorInput.trim()];
+                          handleChange("available_colors" as any, newColors);
+                          setColorInput("");
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (colorInput.trim()) {
+                        const newColors = [...(formData.available_colors || []), colorInput.trim()];
+                        handleChange("available_colors" as any, newColors);
+                        setColorInput("");
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.available_colors?.map((color, index) => (
+                    <div
+                      key={index}
+                      className="bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm flex items-center gap-2 group"
+                    >
+                      {color}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newColors = formData.available_colors?.filter((_, i) => i !== index);
+                          handleChange("available_colors" as any, newColors || []);
+                        }}
+                        className="text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {(!formData.available_colors || formData.available_colors.length === 0) && (
+                    <p className="text-sm text-muted-foreground italic">No colors added yet.</p>
+                  )}
                 </div>
               </div>
             </CardContent>

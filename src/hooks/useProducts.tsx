@@ -17,6 +17,7 @@ export interface Product {
   cut: string | null;
   color: string | null;
   metal: string | null;
+  available_colors?: string[] | null;
   is_active: boolean | null;
   created_at: string;
   updated_at: string;
